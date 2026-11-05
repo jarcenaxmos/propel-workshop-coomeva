@@ -1,0 +1,1 @@
+Afiliaciones al negocio de salud (planes). Un asociado puede tener mas de una a lo largo del tiempo.

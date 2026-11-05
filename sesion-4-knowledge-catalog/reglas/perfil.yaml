@@ -1,0 +1,3 @@
+# Spec del data profile scan (DataProfileSpec, dataplex v1). Se usa para asociados y movimientos.
+samplingPercent: 100
+catalogPublishingEnabled: true   # publica el perfil en la entrada (pestaña Data profile)

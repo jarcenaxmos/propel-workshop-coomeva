@@ -1,0 +1,5 @@
+.DS_Store
+__pycache__/
+.venv/
+*.pyc
+sesion-4-knowledge-catalog/reglas/dq-*.yaml

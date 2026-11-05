@@ -1,0 +1,26 @@
+[
+ {
+  "name": "id_oficina",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador de la oficina (OF01..OF40)."
+ },
+ {
+  "name": "id_regional",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Regional a la que pertenece la oficina. Referencia a regionales.id_regional."
+ },
+ {
+  "name": "oficina",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Nombre de la oficina."
+ },
+ {
+  "name": "ciudad",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Ciudad donde esta la oficina."
+ }
+]

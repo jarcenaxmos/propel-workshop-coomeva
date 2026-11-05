@@ -1,0 +1,1 @@
+Asociados de la cooperativa, tal como llegaron del core on-premise (60.000 asociados, con problemas de calidad sembrados: duplicados, nulos, correos invalidos y fechas futuras). Datos sinteticos.

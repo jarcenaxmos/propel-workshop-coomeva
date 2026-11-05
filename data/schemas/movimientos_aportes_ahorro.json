@@ -1,0 +1,44 @@
+[
+ {
+  "name": "id_movimiento",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador del movimiento (MOV + 9 digitos)."
+ },
+ {
+  "name": "id_asociado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Asociado dueno del movimiento. Referencia a asociados.id_asociado."
+ },
+ {
+  "name": "id_producto",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Producto de aportes o ahorro. Referencia a productos.id_producto."
+ },
+ {
+  "name": "fecha_movimiento",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE",
+  "description": "Fecha y hora del movimiento (UTC)."
+ },
+ {
+  "name": "tipo_movimiento",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Tipo: Consignacion, Retiro, Aporte mensual, Rendimiento. El tipo determina el signo; el monto es positivo."
+ },
+ {
+  "name": "monto",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Monto en pesos colombianos (COP). Positivo; los retiros tambien. Unas pocas filas negativas son un error sembrado."
+ },
+ {
+  "name": "canal",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Canal: Oficina, App, Web, PSE, Debito automatico."
+ }
+]

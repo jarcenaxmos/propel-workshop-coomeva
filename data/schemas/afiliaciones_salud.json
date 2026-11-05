@@ -1,0 +1,44 @@
+[
+ {
+  "name": "id_afiliacion",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador de la afiliacion (AFI + 7 digitos)."
+ },
+ {
+  "name": "id_asociado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Asociado afiliado. Referencia a asociados.id_asociado."
+ },
+ {
+  "name": "plan",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Plan: Plan Oro, Plan Plata, Plan Esencial, Plan Familiar."
+ },
+ {
+  "name": "fecha_inicio",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Fecha de inicio de la afiliacion."
+ },
+ {
+  "name": "fecha_fin",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Fecha de fin de la afiliacion. NULL si esta vigente."
+ },
+ {
+  "name": "estado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Estado: Activa o Cancelada. Afiliado de salud vigente = estado 'Activa'."
+ },
+ {
+  "name": "valor_mensual",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Valor mensual del plan en COP."
+ }
+]

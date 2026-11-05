@@ -1,0 +1,26 @@
+[
+ {
+  "name": "id_producto",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador del producto (P01..P15)."
+ },
+ {
+  "name": "linea",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Linea de negocio: Aportes, Ahorro, Credito, Salud, Seguros."
+ },
+ {
+  "name": "producto",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Nombre del producto."
+ },
+ {
+  "name": "tasa_ea",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Tasa efectiva anual de referencia del producto, en porcentaje (ej. 24.50). NULL si no aplica."
+ }
+]

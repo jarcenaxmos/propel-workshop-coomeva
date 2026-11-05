@@ -1,0 +1,158 @@
+# Agente de referencia de la sesión V del workshop Propel Coomeva (6-nov-2026).
+# Fuente de verdad del agente: `aplicar_agente.py aplicar` lo crea o lo deja igual a este
+# archivo en tu proyecto, y desde ahí se ve completo en BigQuery Studio → Agents →
+# Agent catalog (instrucciones, glosario y verified queries).
+#
+# Marcador que reemplaza aplicar_agente.py:
+#   {{t:tabla}}  → `<tu-proyecto>.coop_marts.tabla`
+#
+# Glosario: EXACTAMENTE las definiciones del glosario del workshop. Si la sesión IV deja el
+# glosario `glosario-coop` de Knowledge Catalog asociado a las columnas de coop_marts, el agente
+# lo importa solo (máx. 10 términos por tabla) y este bloque se vacía para no duplicar
+# definiciones (la documentación lo desaconseja).
+# Estado 4-nov: glosario-coop ya existe y está ligado a columnas (9 de 10 términos; el ICV no).
+# La API v1 solo acepta glosario propio (glossaryTerms), así que este agente lo lleva copiado;
+# en la consola, el agente de cada participante importa los ligados y solo crea el ICV.
+#
+# Datos sintéticos: no hay PII real, pero el agente igual no lista datos personales.
+
+agent_id: coop-cartera
+location: global        # US multirregión lo bloquea la org policy gcp.resourceLocations (probado 4-nov); us-east1 no es ubicación de CA
+display_name: "Cartera y captación · Coomeva (workshop)"
+description: >-
+  Responde preguntas de negocio sobre la cartera de crédito (cartera total, vencida, ICV,
+  cartera en riesgo 90), la captación de aportes y ahorro y los desembolsos de la cooperativa
+  de ejemplo del workshop Propel Coomeva, con el data mart coop_marts.
+
+# Tope por consulta: CA hace un dry run antes de ejecutar y, si la estimación se pasa, la
+# consulta falla sin cobrar. Mínimo aceptado por BigQuery Studio: 10485760 (10 MiB).
+# Tamaños (4-nov-2026): fct_movimientos 574 MB · fct_cartera_mensual 228 MB · dim_asociado 10 MB.
+# 100 MiB deja pasar las verified queries (leen una o pocas particiones) y frena un barrido
+# completo de fct_movimientos.
+max_bytes_por_consulta: 104857600  # 100 MiB
+
+tables:
+  - fct_cartera_mensual
+  - dim_asociado
+  - fct_movimientos
+  - mv_cartera_regional_mensual
+  # Desembolsos: ningún mart trae monto_desembolsado / fecha_desembolso, y el glosario los
+  # define sobre creditos. Se leen de coop_raw (solo lectura) mientras no exista fct_creditos.
+  - coop_raw.creditos
+  - coop_raw.productos
+
+system_instruction: |
+  Eres el analista de cartera y captación de una cooperativa financiera colombiana. Respondes
+  siempre en español, breve y claro, con las tablas de este agente (data mart coop_marts).
+
+  Cómo responder:
+  - Si la pregunta coincide con una verified query, úsala: son las cifras oficiales.
+  - Si escribes SQL nuevo, dilo al final: "Consulta exploratoria, no es una cifra oficial".
+  - Di siempre la fecha de corte o el periodo, y la definición de la métrica que usaste.
+  - Montos en pesos colombianos (COP), con separador de miles y sin decimales. ICV en
+    porcentaje con dos decimales.
+  - Gráficos cuando ayuden: barras para comparar regionales, líneas para tendencias.
+
+  Reglas de datos:
+  - La cartera es una foto por fecha_corte (último día de cada mes). "Octubre 2026" es
+    fecha_corte = '2026-10-31'. Nunca sumes saldos de varios cortes: compara corte contra corte.
+  - Las métricas se calculan con las definiciones del glosario, sin variantes. El ICV es sobre
+    saldo, no sobre número de créditos, y se recalcula para cada grupo (regional, producto o
+    segmento) en la misma fecha_corte: no promedies ICV de grupos.
+  - Captaciones, retiros y captación neta salen de fct_movimientos.tipo_movimiento; los
+    "Rendimiento" no son captación.
+  - Las regionales son seis: Cali, Bogotá, Medellín, Barranquilla, Bucaramanga y Eje Cafetero.
+
+  Mantente en tu rol: si piden algo ajeno a cartera, captación o desembolsos, o datos
+  personales de asociados (nombres, documentos, correos, teléfonos), explica que no lo haces.
+
+glossary:
+  - term: Asociado activo
+    labels: [asociados activos, activo]
+    description: "asociados.estado = 'Activo'"
+  - term: Cartera total
+    labels: [saldo de cartera, cartera]
+    description: Suma de saldo_capital en una fecha_corte
+  - term: Cartera vencida
+    labels: [cartera en mora, mora, vencida]
+    description: Suma de saldo_capital con dias_mora > 30 en una fecha_corte
+  - term: Índice de cartera vencida (ICV)
+    labels: [ICV, índice de mora, indicador de cartera vencida]
+    description: Cartera vencida / cartera total, por fecha_corte
+  - term: Cartera en riesgo 90
+    labels: [mora 90, cartera en riesgo, CeR90]
+    description: Suma de saldo_capital con dias_mora > 90
+  - term: Desembolsos
+    labels: [colocación, créditos desembolsados, monto desembolsado]
+    description: Suma de creditos.monto_desembolsado en el período, por fecha_desembolso
+  - term: Captaciones
+    labels: [captación, depósitos, ingresos de ahorro]
+    description: "Suma de monto con tipo_movimiento IN ('Consignacion','Aporte mensual')"
+  - term: Retiros
+    labels: [retiro, salidas]
+    description: "Suma de monto con tipo_movimiento = 'Retiro'"
+  - term: Captación neta
+    labels: [captación neta, flujo neto]
+    description: Captaciones − Retiros
+  - term: Afiliado de salud vigente
+    labels: [afiliado vigente, plan de salud vigente]
+    description: "afiliaciones_salud.estado = 'Activa'"
+
+verified_queries:
+  - question: "¿Cuál es el índice de cartera vencida (ICV) por regional en @mes?"
+    parameters:
+      - name: mes
+        type: STRING
+        description: >-
+          Mes del corte en formato AAAA-MM. "octubre 2026" → 2026-10. El corte es el último
+          día de ese mes.
+    sql: |
+      SELECT
+        fecha_corte,
+        regional,
+        SUM(saldo_capital) AS cartera_total,
+        SUM(IF(dias_mora > 30, saldo_capital, 0)) AS cartera_vencida,
+        ROUND(100 * SAFE_DIVIDE(SUM(IF(dias_mora > 30, saldo_capital, 0)), SUM(saldo_capital)), 2) AS icv_pct
+      FROM {{t:fct_cartera_mensual}}
+      WHERE fecha_corte = LAST_DAY(PARSE_DATE('%Y-%m', @mes))
+      GROUP BY fecha_corte, regional
+      ORDER BY icv_pct DESC
+
+  - question: "¿Cuál fue la captación neta mensual entre @fecha_desde y @fecha_hasta?"
+    parameters:
+      - name: fecha_desde
+        type: DATE
+        description: Primer día del periodo (inclusive), AAAA-MM-DD.
+      - name: fecha_hasta
+        type: DATE
+        description: Último día del periodo (inclusive), AAAA-MM-DD.
+    sql: |
+      SELECT
+        DATE_TRUNC(DATE(fecha_movimiento), MONTH) AS mes,
+        SUM(IF(tipo_movimiento IN ('Consignacion', 'Aporte mensual'), monto, 0)) AS captaciones,
+        SUM(IF(tipo_movimiento = 'Retiro', monto, 0)) AS retiros,
+        SUM(IF(tipo_movimiento IN ('Consignacion', 'Aporte mensual'), monto, 0))
+          - SUM(IF(tipo_movimiento = 'Retiro', monto, 0)) AS captacion_neta
+      FROM {{t:fct_movimientos}}
+      WHERE DATE(fecha_movimiento) BETWEEN @fecha_desde AND @fecha_hasta
+      GROUP BY mes
+      ORDER BY mes
+
+  - question: "¿Cuánto se desembolsó por producto entre @fecha_desde y @fecha_hasta?"
+    parameters:
+      - name: fecha_desde
+        type: DATE
+        description: Primer día del periodo (inclusive), AAAA-MM-DD.
+      - name: fecha_hasta
+        type: DATE
+        description: Último día del periodo (inclusive), AAAA-MM-DD.
+    sql: |
+      SELECT
+        p.producto,
+        COUNT(*) AS creditos_desembolsados,
+        SUM(c.monto_desembolsado) AS desembolsos
+      FROM {{t:coop_raw.creditos}} AS c
+      JOIN {{t:coop_raw.productos}} AS p USING (id_producto)
+      WHERE c.fecha_desembolso BETWEEN @fecha_desde AND @fecha_hasta
+      GROUP BY p.producto
+      ORDER BY desembolsos DESC

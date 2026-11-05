@@ -1,0 +1,179 @@
+{
+  "glosario": {
+    "id": "glosario-coop",
+    "location": "global",
+    "displayName": "Glosario Coop",
+    "description": "Glosario de negocio de la cooperativa (workshop Propel Coomeva). Definiciones únicas usadas por Knowledge Catalog y por el data agent."
+  },
+  "categorias": [
+    {
+      "id": "asociados",
+      "displayName": "Asociados",
+      "description": "Base social de la cooperativa."
+    },
+    {
+      "id": "cartera",
+      "displayName": "Cartera de crédito",
+      "description": "Saldos, mora y desembolsos de la línea de crédito."
+    },
+    {
+      "id": "aportes-ahorro",
+      "displayName": "Aportes y ahorro",
+      "description": "Movimientos de aportes y ahorro de los asociados."
+    },
+    {
+      "id": "salud",
+      "displayName": "Salud",
+      "description": "Afiliaciones a planes de salud."
+    }
+  ],
+  "terminos": [
+    {
+      "id": "asociado-activo",
+      "categoria": "asociados",
+      "displayName": "Asociado activo",
+      "description": "asociados.estado = 'Activo'"
+    },
+    {
+      "id": "cartera-total",
+      "categoria": "cartera",
+      "displayName": "Cartera total",
+      "description": "Suma de saldo_capital en una fecha_corte"
+    },
+    {
+      "id": "cartera-vencida",
+      "categoria": "cartera",
+      "displayName": "Cartera vencida",
+      "description": "Suma de saldo_capital con dias_mora > 30 en una fecha_corte"
+    },
+    {
+      "id": "icv",
+      "categoria": "cartera",
+      "displayName": "Índice de cartera vencida (ICV)",
+      "description": "Cartera vencida / cartera total, por fecha_corte"
+    },
+    {
+      "id": "cartera-riesgo-90",
+      "categoria": "cartera",
+      "displayName": "Cartera en riesgo 90",
+      "description": "Suma de saldo_capital con dias_mora > 90"
+    },
+    {
+      "id": "desembolsos",
+      "categoria": "cartera",
+      "displayName": "Desembolsos",
+      "description": "Suma de creditos.monto_desembolsado en el período, por fecha_desembolso"
+    },
+    {
+      "id": "captaciones",
+      "categoria": "aportes-ahorro",
+      "displayName": "Captaciones",
+      "description": "Suma de monto con tipo_movimiento IN ('Consignacion','Aporte mensual')"
+    },
+    {
+      "id": "retiros",
+      "categoria": "aportes-ahorro",
+      "displayName": "Retiros",
+      "description": "Suma de monto con tipo_movimiento = 'Retiro'"
+    },
+    {
+      "id": "captacion-neta",
+      "categoria": "aportes-ahorro",
+      "displayName": "Captación neta",
+      "description": "Captaciones − Retiros"
+    },
+    {
+      "id": "afiliado-salud-vigente",
+      "categoria": "salud",
+      "displayName": "Afiliado de salud vigente",
+      "description": "afiliaciones_salud.estado = 'Activa'"
+    }
+  ],
+  "vinculos": [
+    {
+      "dataset": "coop_marts",
+      "tabla": "dim_asociado",
+      "columna": "estado",
+      "termino": "asociado-activo"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "dim_asociado",
+      "columna": "plan_salud_vigente",
+      "termino": "afiliado-salud-vigente"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_cartera_mensual",
+      "columna": "saldo_capital",
+      "termino": "cartera-total"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_cartera_mensual",
+      "columna": "en_mora_30",
+      "termino": "cartera-vencida"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_cartera_mensual",
+      "columna": "en_mora_90",
+      "termino": "cartera-riesgo-90"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "mv_cartera_regional_mensual",
+      "columna": "cartera_total",
+      "termino": "cartera-total"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "mv_cartera_regional_mensual",
+      "columna": "cartera_vencida",
+      "termino": "cartera-vencida"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "mv_cartera_regional_mensual",
+      "columna": "icv",
+      "termino": "icv"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_movimientos",
+      "columna": "monto",
+      "termino": "captaciones"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_movimientos",
+      "columna": "monto",
+      "termino": "retiros"
+    },
+    {
+      "dataset": "coop_marts",
+      "tabla": "fct_movimientos",
+      "columna": "monto",
+      "termino": "captacion-neta"
+    },
+    {
+      "dataset": "coop_raw",
+      "tabla": "creditos",
+      "columna": "monto_desembolsado",
+      "termino": "desembolsos"
+    }
+  ],
+  "data_product": {
+    "id": "cartera-y-captaciones",
+    "displayName": "Cartera y captaciones · Coop (workshop)",
+    "description": "Data mart de la cooperativa: cartera mensual con mora (fct_cartera_mensual), ICV por regional (mv_cartera_regional_mensual), movimientos de aportes y ahorro (fct_movimientos) y dimensión de asociados deduplicada (dim_asociado). Definiciones en glosario-coop.",
+    "ownerEmails": [],
+    "dataset": "coop_marts",
+    "tablas": [
+      "dim_asociado",
+      "fct_cartera_mensual",
+      "fct_movimientos",
+      "mv_cartera_regional_mensual"
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+[
+ {
+  "name": "id_asociado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador del asociado (ASO + 7 digitos). Debe ser unico; en el crudo hay ids duplicados."
+ },
+ {
+  "name": "tipo_documento",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Tipo de documento: CC (cedula de ciudadania), CE (cedula de extranjeria), PA (pasaporte)."
+ },
+ {
+  "name": "numero_documento",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Numero de documento. Ficticio."
+ },
+ {
+  "name": "nombre_completo",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Nombre completo del asociado. Ficticio."
+ },
+ {
+  "name": "email",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Correo electronico. Ficticio; un pequeno porcentaje tiene formato invalido."
+ },
+ {
+  "name": "telefono",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Telefono celular (10 digitos). Ficticio."
+ },
+ {
+  "name": "fecha_nacimiento",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Fecha de nacimiento. Aproximadamente 1% viene en NULL."
+ },
+ {
+  "name": "genero",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Genero: F o M."
+ },
+ {
+  "name": "ciudad",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Ciudad de residencia (la de su oficina)."
+ },
+ {
+  "name": "id_oficina",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Oficina donde esta vinculado. Referencia a oficinas.id_oficina."
+ },
+ {
+  "name": "segmento",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Segmento: Empleado, Independiente, Pensionado, Empresario."
+ },
+ {
+  "name": "estado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Estado del asociado: Activo, Retirado, Suspendido. Asociado activo = estado 'Activo'."
+ },
+ {
+  "name": "fecha_vinculacion",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Fecha en que el asociado se vinculo a la cooperativa. Algunas vienen en el futuro (error de origen)."
+ },
+ {
+  "name": "canal_vinculacion",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Canal de vinculacion: Oficina, Digital, Asesor comercial, Convenio empresarial."
+ },
+ {
+  "name": "rango_ingresos",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Rango de ingresos declarado en multiplos del salario minimo (SMMLV)."
+ }
+]

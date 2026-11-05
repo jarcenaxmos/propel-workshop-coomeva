@@ -1,0 +1,44 @@
+[
+ {
+  "name": "fecha_corte",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Ultimo dia del mes al que corresponde la foto de cartera."
+ },
+ {
+  "name": "id_credito",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Credito. Referencia a creditos.id_credito."
+ },
+ {
+  "name": "id_asociado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Asociado titular del credito."
+ },
+ {
+  "name": "saldo_capital",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Saldo de capital pendiente en COP a la fecha de corte. Cartera total = suma de saldo_capital en una fecha_corte."
+ },
+ {
+  "name": "cuota_mes",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Cuota contractual del mes en COP (0 en el mes del desembolso)."
+ },
+ {
+  "name": "valor_pagado",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Valor efectivamente pagado en el mes en COP."
+ },
+ {
+  "name": "dias_mora",
+  "type": "INT64",
+  "mode": "NULLABLE",
+  "description": "Dias de mora a la fecha de corte. Cartera vencida = saldo_capital con dias_mora > 30."
+ }
+]

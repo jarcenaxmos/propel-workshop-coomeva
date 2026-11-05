@@ -1,0 +1,20 @@
+[
+ {
+  "name": "id_regional",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador de la regional (R01..R06)."
+ },
+ {
+  "name": "regional",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Nombre de la regional."
+ },
+ {
+  "name": "ciudad_sede",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Ciudad donde funciona la sede de la regional."
+ }
+]

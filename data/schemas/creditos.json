@@ -1,0 +1,50 @@
+[
+ {
+  "name": "id_credito",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Identificador del credito (CRE + 7 digitos)."
+ },
+ {
+  "name": "id_asociado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Asociado titular. Referencia a asociados.id_asociado."
+ },
+ {
+  "name": "id_producto",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Producto de credito. Referencia a productos.id_producto."
+ },
+ {
+  "name": "fecha_desembolso",
+  "type": "DATE",
+  "mode": "NULLABLE",
+  "description": "Fecha de desembolso del credito."
+ },
+ {
+  "name": "monto_desembolsado",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Monto desembolsado en pesos colombianos (COP)."
+ },
+ {
+  "name": "plazo_meses",
+  "type": "INT64",
+  "mode": "NULLABLE",
+  "description": "Plazo pactado en meses."
+ },
+ {
+  "name": "tasa_ea",
+  "type": "NUMERIC",
+  "mode": "NULLABLE",
+  "description": "Tasa efectiva anual del credito, en porcentaje (ej. 24.50)."
+ },
+ {
+  "name": "estado",
+  "type": "STRING",
+  "mode": "NULLABLE",
+  "description": "Estado del credito: Vigente, Cancelado, Castigado."
+ }
+]
