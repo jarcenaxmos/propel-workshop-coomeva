@@ -4,11 +4,26 @@ Viernes 6-nov-2026, 13:30 a 14:30. 25 min de charla y 35 min de hands-on sobre e
 Idea de la sesión: un dato que se ve bien no es un dato confiable. Confiable es lo que está **definido** (glosario), **trazado** (linaje) y **medido** (calidad). Eso es lo que hereda el agente de la sesión V.
 
 > Nombres: el producto se llama **Knowledge Catalog** (antes Dataplex Universal Catalog). La API, `gcloud` e IAM siguen diciendo `dataplex`.
-> Todo va con proyecto y cuenta explícitos. No uses `gcloud config set`.
+> Los comandos usan tu proyecto activo de Cloud Shell a través de la variable `PROJECT_ID` (paso 0).
 
 ## Lo que hace cada participante
 
 Cada paso: qué hacer, el comando y qué deberías ver. Tiempo total: unos 32 minutos.
+
+### Paso 0 · Preparar la terminal (1 min)
+
+En Cloud Shell, con tu proyecto seleccionado:
+
+```bash
+cd ~/propel-workshop-coomeva/sesion-4-knowledge-catalog
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
+echo "proyecto=${PROJECT_ID} número=${PROJECT_NUMBER}"
+bash scripts/scans.sh
+```
+
+Deberías ver tu proyecto y su número (no vacíos), y luego `· creo dq-asociados` … `· ejecuto perfil-movimientos`. Esos 4 scans de referencia tardan 1 a 3 minutos en terminar; los lees en el paso 5.
+Si `proyecto=` sale vacío: `gcloud config set project TU_PROYECTO` y repite. Si abres otra pestaña de Cloud Shell, vuelve a correr las dos líneas `export`.
 
 ### Paso 1 · Buscar el mart en el catálogo (6 min)
 
@@ -20,8 +35,8 @@ gcloud dataplex entries search "cartera vencida" \
   --format="table(entrySource.displayName,entrySource.system,fullyQualifiedName)"
 ```
 
-Deberías ver: `mv_cartera_regional_mensual` y `fct_cartera_mensual`, los términos del glosario "Cartera vencida" e "Índice de cartera vencida (ICV)" y el data agent de la sesión V.
-Si no: revisa `--project` y `--account` (el proyecto por defecto de tu gcloud puede ser otro). Este comando no acepta `--location`.
+Deberías ver: `mv_cartera_regional_mensual` y `fct_cartera_mensual` (sistema `BIGQUERY`) y los términos del glosario "Cartera vencida" e "Índice de cartera vencida (ICV)" (sistema `DATAPLEX`). La búsqueda recorre todo lo que tu cuenta puede ver, así que pueden aparecer entradas de otros proyectos.
+Si sale `RESOURCE_PROJECT_INVALID`: `PROJECT_ID` está vacía, vuelve al paso 0. Este comando no acepta `--location`.
 
 ### Paso 2 · Linaje de `fct_cartera_mensual` (6 min)
 
@@ -32,7 +47,7 @@ curl -s -X POST \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "x-goog-user-project: ${PROJECT_ID}" -H "Content-Type: application/json" \
   "https://datalineage.googleapis.com/v1/projects/${PROJECT_ID}/locations/us-east1:searchLinks" \
-  -d '{"target":{"fullyQualifiedName":"bigquery:${PROJECT_ID}.coop_marts.fct_cartera_mensual"}}'
+  -d "{\"target\":{\"fullyQualifiedName\":\"bigquery:${PROJECT_ID}.coop_marts.fct_cartera_mensual\"}}"
 ```
 
 Deberías ver 4 orígenes: `coop_raw.cartera_mensual`, `coop_raw.creditos`, `coop_raw.productos` y `coop_marts.dim_asociado`. Aguas abajo, `mv_cartera_regional_mensual`. Con el campo `target.field` (por ejemplo `["saldo_capital"]`) ves el linaje por columna.
@@ -40,14 +55,14 @@ Si la lista sale vacía: el linaje solo existe para tablas creadas por jobs de B
 
 ### Paso 3 · Términos del glosario vinculados a columnas (6 min)
 
-Consola: Knowledge Catalog, Glossaries, `glosario-coop`, término "Cartera vencida". O por API (el número de proyecto es `109831685163`):
+Consola: Knowledge Catalog, Glossaries, `glosario-coop`, término "Cartera vencida". O por API (usa el número de proyecto del paso 0):
 
 ```bash
-ENTRY=projects/109831685163/locations/us-east1/entryGroups/@bigquery/entries
+ENTRY=projects/${PROJECT_NUMBER}/locations/us-east1/entryGroups/@bigquery/entries
 ENTRY=$ENTRY/bigquery.googleapis.com/projects/${PROJECT_ID}/datasets/coop_marts/tables/fct_cartera_mensual
 curl -s -G -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "x-goog-user-project: ${PROJECT_ID}" \
-  "https://dataplex.googleapis.com/v1/projects/109831685163/locations/us-east1:lookupEntryLinks" \
+  "https://dataplex.googleapis.com/v1/projects/${PROJECT_NUMBER}/locations/us-east1:lookupEntryLinks" \
   --data-urlencode "entryMode=SOURCE" --data-urlencode "entry=$ENTRY"
 ```
 
@@ -82,11 +97,11 @@ gcloud dataplex datascans run dq-asociados-<tu_id> \
 ```
 
 Deberías ver `state: ACTIVE` al crear y el nombre de un job al correr. El job tarda 1 a 3 minutos: mientras tanto, lee el paso 5 sobre el scan de referencia.
-Si falla: `ALREADY_EXISTS`, cambia `<tu_id>`; `PERMISSION_DENIED`, tu cuenta no puede crear scans (usa `dq-asociados`).
+Si falla: `ALREADY_EXISTS`, cambia `<tu_id>`; `PERMISSION_DENIED`, tu cuenta no puede crear scans (usa `dq-asociados`, el que creó el paso 0).
 
 ### Paso 5 · Leer lo que encontró el scan (6 min)
 
-Consola: BigQuery, `coop_raw.asociados`, pestaña **Data quality**. O por terminal (scan de referencia `dq-asociados`, o el tuyo):
+Consola: BigQuery, `coop_raw.asociados`, pestaña **Data quality**. O por terminal (scan de referencia `dq-asociados` del paso 0, o el tuyo):
 
 ```bash
 gcloud dataplex datascans jobs list --datascan=dq-asociados \
@@ -102,7 +117,7 @@ Pregunta para cerrar: ¿qué tabla le daríamos al agente de las 14:30, `coop_ra
 
 ### Si da el tiempo · Data product
 
-Consola: Knowledge Catalog, Data products, `Cartera y captaciones · Coop (workshop)`. Mira los 4 assets (los objetos de `coop_marts`). No hay consumidores externos: la org de labs no acepta correos de Coomeva.
+Consola: Knowledge Catalog, Data products, `Cartera y captaciones · Coop (workshop)`. Mira los 4 assets (los objetos de `coop_marts`); `setup.sh` lo creó en tu proyecto.
 
 ## Para llevarte
 
